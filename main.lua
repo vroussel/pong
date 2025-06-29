@@ -30,6 +30,12 @@ local function display_fps()
 	love.graphics.setColor(1, 1, 1, 1)
 end
 
+local function reset_game()
+	ball:reset()
+	p1:reset()
+	p2:reset()
+end
+
 function love.load()
 	love.graphics.setDefaultFilter("nearest", "nearest")
 
@@ -51,6 +57,7 @@ function love.load()
 
 	love.window.setTitle("Pong")
 
+	reset_game()
 	game_state = "start"
 end
 
@@ -60,6 +67,9 @@ function love.keypressed(key)
 	elseif key == "space" then
 		if game_state == "start" then
 			game_state = "play"
+		elseif game_state == "end" then
+			reset_game()
+			game_state = "start"
 		end
 	elseif key == "escape" then
 		if game_state == "play" then
