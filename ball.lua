@@ -21,6 +21,7 @@ function Ball:new(radius, params)
 	b.radius = radius
 	b.width = radius * 2
 	b.height = radius * 2
+
 	b:reset()
 
 	return b
