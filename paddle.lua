@@ -1,7 +1,7 @@
 ---@class Paddle
 ---@field x number
 ---@field y number
----@field dy number
+---@field dy -1|0|1
 ---@field width number
 ---@field height number
 ---@field speed number
@@ -31,9 +31,9 @@ function Paddle:render()
 end
 
 function Paddle:update(dt)
-	if self.dy > 0 then
+	if self.dy == 1 then
 		self.y = math.min(GAME_HEIGHT - self.height, self.y + self.speed * dt)
-	elseif self.dy < 0 then
+	elseif self.dy == -1 then
 		self.y = math.max(0, self.y - self.speed * dt)
 	end
 end

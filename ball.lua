@@ -2,8 +2,8 @@
 ---@field radius number
 ---@field x number
 ---@field y number
----@field dx number
----@field dy number
+---@field dx -1|0|1
+---@field dy -1|0|1
 ---@field width number
 ---@field height number
 ---@field private x_init number
