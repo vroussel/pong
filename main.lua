@@ -114,10 +114,14 @@ function love.update(dt)
 	if ball.x < 0 then
 		ball:reset()
 		p2.score = p2.score + 1
+		p1:reset()
+		p2:reset()
 		game_state = "start"
 	elseif ball.x + ball.width > GAME_WIDTH then
 		ball:reset()
 		p1.score = p1.score + 1
+		p1:reset()
+		p2:reset()
 		game_state = "start"
 	end
 
