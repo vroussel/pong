@@ -75,8 +75,10 @@ function love.update(dt)
 	-- Paddle collision
 	for _, p in pairs({ p1, p2 }) do
 		if ball:collides(p) then
-			-- Reverse dx and speed up a little
-			ball.dx = -ball.dx * 1.15
+			-- Reverse dx
+			ball.dx = -ball.dx
+			-- Speed up ball a little
+			ball.speed_x = ball.speed_x * 1.15
 
 			-- snap the ball to the right/left edge of the paddle, to avoid infinite collission
 			if ball.dx > 0 then
