@@ -7,6 +7,8 @@
 ---@field speed number
 ---@field score number
 ---@field name string
+---@field private x_init number
+---@field private y_init number
 Paddle = {
 	width = 5,
 	height = 20,
@@ -19,15 +21,23 @@ function Paddle:new(x, y, name, params)
 	setmetatable(p, self)
 	self.__index = self
 
-	p.x = x
-	p.y = y
-	p.dy = 0
+	p.x_init = x
+	p.y_init = y
 	p.width = params.width
 	p.height = params.height
 	p.name = name
 	p.score = 0
 
+	p:reset()
+
 	return p
+end
+
+function Paddle:reset()
+	self.x = self.x_init
+	self.y = self.y_init
+	self.dy = 0
+	self.score = 0
 end
 
 function Paddle:render()
