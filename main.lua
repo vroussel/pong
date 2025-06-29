@@ -4,6 +4,8 @@ GAME_HEIGHT = 243
 local WINDOW_WIDTH = 1280
 local WINDOW_HEIGHT = 720
 
+local WIN_SCORE = 10
+
 local BALL_RADIUS = 2
 
 local font_big
@@ -14,8 +16,8 @@ local push = require("push")
 local Ball = require("ball")
 local Paddle = require("paddle")
 
----@type Paddle, Paddle
-local p1, p2
+---@type Paddle, Paddle, Paddle
+local p1, p2, winner
 ---@type Ball
 local ball
 
@@ -98,6 +100,25 @@ function love.update(dt)
 		ball.dy = -ball.dy
 	end
 
+	-- scoring
+	if ball.x < 0 then
+		ball:reset()
+		p2.score = p2.score + 1
+		game_state = "start"
+	elseif ball.x + ball.width > GAME_WIDTH then
+		ball:reset()
+		p1.score = p1.score + 1
+		game_state = "start"
+	end
+
+	if p1.score >= WIN_SCORE then
+		winner = p1
+		game_state = "end"
+	elseif p2.score >= WIN_SCORE then
+		winner = p2
+		game_state = "end"
+	end
+
 	-- p1
 	p1.dy = 0
 	if love.keyboard.isDown("w") then
@@ -140,6 +161,17 @@ function love.draw()
 		love.graphics.rectangle("fill", 0, 0, GAME_WIDTH, GAME_HEIGHT)
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.printf("PAUSED", 0, (GAME_HEIGHT - love.graphics.getFont():getHeight()) / 2, GAME_WIDTH, "center")
+	elseif game_state == "end" then
+		love.graphics.setColor(love.math.colorFromBytes(40, 45, 52, 240))
+		love.graphics.rectangle("fill", 0, 0, GAME_WIDTH, GAME_HEIGHT)
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.printf(
+			winner.name .. " WINS !",
+			0,
+			(GAME_HEIGHT - love.graphics.getFont():getHeight()) / 2,
+			GAME_WIDTH,
+			"center"
+		)
 	end
 
 	push.finish()
