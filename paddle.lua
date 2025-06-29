@@ -15,7 +15,7 @@ Paddle = {
 	speed = 200,
 }
 
-function Paddle:new(x, y, name, params)
+function Paddle:new(x, y, name, scored_pred, params)
 	local p = {}
 	params = params or {}
 	setmetatable(p, self)
@@ -27,6 +27,7 @@ function Paddle:new(x, y, name, params)
 	p.height = params.height
 	p.name = name
 	p.score = 0
+	p.scored_pred = scored_pred
 
 	p:reset()
 
@@ -34,10 +35,18 @@ function Paddle:new(x, y, name, params)
 end
 
 function Paddle:reset()
+	self:reset_position()
+	self.score = 0
+end
+
+function Paddle:reset_position()
 	self.x = self.x_init
 	self.y = self.y_init
 	self.dy = 0
-	self.score = 0
+end
+
+function Paddle:scored()
+	return self.scored_pred()
 end
 
 function Paddle:render()

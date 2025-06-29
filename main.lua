@@ -43,8 +43,12 @@ function love.load()
 	font_small = love.graphics.newFont("font.ttf", 8)
 
 	ball = Ball:new(BALL_RADIUS)
-	p1 = Paddle:new(10, 10, "Player 1")
-	p2 = Paddle:new(GAME_WIDTH - 10, GAME_HEIGHT - Paddle.height - 10, "Player 2")
+	p1 = Paddle:new(10, 10, "Player 1", function()
+		return ball.x + ball.width > GAME_WIDTH
+	end)
+	p2 = Paddle:new(GAME_WIDTH - 10, GAME_HEIGHT - Paddle.height - 10, "Player 2", function()
+		return ball.x < 0
+	end)
 
 	love.window.setMode(WINDOW_WIDTH, WINDOW_HEIGHT, {
 		resizable = false,
@@ -81,8 +85,8 @@ function love.keypressed(key)
 end
 
 function love.update(dt)
-	-- Paddle collision
 	for _, p in pairs({ p1, p2 }) do
+		-- Paddle collision
 		if ball:collides(p) then
 			-- Reverse dx
 			ball.dx = -ball.dx
@@ -99,6 +103,20 @@ function love.update(dt)
 			-- Add some random to speed_y for fun
 			ball.speed_y = ball.speed_y * math.random(50, 200) / 100
 		end
+
+		-- Scoring
+		if p:scored() then
+			p.score = p.score + 1
+			if p1.score >= WIN_SCORE then
+				winner = p1
+				game_state = "end"
+			else
+				p1:reset_position()
+				p2:reset_position()
+				ball:reset()
+				game_state = "start"
+			end
+		end
 	end
 
 	-- Up/down collision
@@ -108,29 +126,6 @@ function love.update(dt)
 	elseif ball.y + ball.height > GAME_HEIGHT then
 		ball.y = GAME_HEIGHT - ball.height
 		ball.dy = -ball.dy
-	end
-
-	-- scoring
-	if ball.x < 0 then
-		ball:reset()
-		p2.score = p2.score + 1
-		p1:reset()
-		p2:reset()
-		game_state = "start"
-	elseif ball.x + ball.width > GAME_WIDTH then
-		ball:reset()
-		p1.score = p1.score + 1
-		p1:reset()
-		p2:reset()
-		game_state = "start"
-	end
-
-	if p1.score >= WIN_SCORE then
-		winner = p1
-		game_state = "end"
-	elseif p2.score >= WIN_SCORE then
-		winner = p2
-		game_state = "end"
 	end
 
 	-- p1
