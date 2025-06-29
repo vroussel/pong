@@ -5,13 +5,15 @@
 ---@field width number
 ---@field height number
 ---@field speed number
+---@field score number
+---@field name string
 Paddle = {
 	width = 5,
 	height = 20,
 	speed = 200,
 }
 
-function Paddle:new(x, y, params)
+function Paddle:new(x, y, name, params)
 	local p = {}
 	params = params or {}
 	setmetatable(p, self)
@@ -22,6 +24,8 @@ function Paddle:new(x, y, params)
 	p.dy = 0
 	p.width = params.width
 	p.height = params.height
+	p.name = name
+	p.score = 0
 
 	return p
 end

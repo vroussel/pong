@@ -19,9 +19,6 @@ local p1, p2
 ---@type Ball
 local ball
 
-local p1_score = 0
-local p2_score = 0
-
 local game_state = nil
 
 local function display_fps()
@@ -38,8 +35,8 @@ function love.load()
 	font_small = love.graphics.newFont("font.ttf", 8)
 
 	ball = Ball:new(BALL_RADIUS)
-	p1 = Paddle:new(10, 10)
-	p2 = Paddle:new(GAME_WIDTH - 10, GAME_HEIGHT - Paddle.height - 10)
+	p1 = Paddle:new(10, 10, "Player 1")
+	p2 = Paddle:new(GAME_WIDTH - 10, GAME_HEIGHT - Paddle.height - 10, "Player 2")
 
 	love.window.setMode(WINDOW_WIDTH, WINDOW_HEIGHT, {
 		resizable = false,
@@ -132,7 +129,7 @@ function love.draw()
 	love.graphics.clear(love.math.colorFromBytes(40, 45, 52))
 	display_fps()
 	love.graphics.setFont(font_big)
-	love.graphics.printf(p1_score .. "\t" .. p2_score, 0, math.floor(GAME_HEIGHT / 6), GAME_WIDTH, "center")
+	love.graphics.printf(p1.score .. "\t" .. p2.score, 0, math.floor(GAME_HEIGHT / 6), GAME_WIDTH, "center")
 
 	p1:render()
 	p2:render()
