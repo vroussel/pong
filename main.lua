@@ -69,18 +69,24 @@ end
 function love.keypressed(key)
 	if key == "q" then
 		love.event.quit()
-	elseif key == "space" then
-		if game_state == "start" then
+	end
+
+	if game_state == "start" then
+		if key == "space" then
 			game_state = "play"
-		elseif game_state == "end" then
+		end
+	elseif game_state == "play" then
+		if key == "escape" then
+			game_state = "paused"
+		end
+	elseif game_state == "paused" then
+		if key == "escape" then
+			game_state = "play"
+		end
+	elseif game_state == "end" then
+		if key == "space" then
 			reset_game()
 			game_state = "start"
-		end
-	elseif key == "escape" then
-		if game_state == "play" then
-			game_state = "paused"
-		elseif game_state == "paused" then
-			game_state = "play"
 		end
 	end
 end
