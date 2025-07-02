@@ -27,13 +27,21 @@ function Ball:new(radius, params)
 	return b
 end
 
-function Ball:reset()
+---@param serving_side 'left'|'right'|nil
+function Ball:reset(serving_side)
 	self.x = self.x_init
 	self.y = self.y_init
 	self.speed_x = 100
 	self.speed_y = math.random(50)
-	self.dx = math.random(2) == 1 and 1 or -1
 	self.dy = math.random(2) == 1 and 1 or -1
+
+	if serving_side == "left" then
+		self.dx = -1
+	elseif serving_side == "right" then
+		self.dx = 1
+	else
+		self.dx = math.random(2) == 1 and 1 or -1
+	end
 end
 
 function Ball:render()

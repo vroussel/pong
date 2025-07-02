@@ -115,7 +115,15 @@ function love.update(dt)
 			else
 				p1:reset_paddle()
 				p2:reset_paddle()
-				ball:reset()
+
+				local serving_side
+				if player == p1 then
+					serving_side = "right"
+				else
+					serving_side = "left"
+				end
+				ball:reset(serving_side)
+
 				game_state = "start"
 			end
 		end
