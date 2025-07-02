@@ -15,8 +15,9 @@ local love = require("love")
 local push = require("push")
 local Ball = require("ball")
 local Paddle = require("paddle")
+local Player = require("player")
 
----@type Paddle, Paddle, Paddle
+---@type Player, Player, Player
 local p1, p2, winner
 ---@type Ball
 local ball
@@ -43,10 +44,10 @@ function love.load()
 	font_small = love.graphics.newFont("font.ttf", 8)
 
 	ball = Ball:new(BALL_RADIUS)
-	p1 = Paddle:new(10, 10, "Player 1", function()
+	p1 = Player:new("Player 1", 10, 10, function()
 		return ball.x + ball.width > GAME_WIDTH
 	end)
-	p2 = Paddle:new(GAME_WIDTH - 10, GAME_HEIGHT - Paddle.height - 10, "Player 2", function()
+	p2 = Player:new("Player 2", GAME_WIDTH - 10, GAME_HEIGHT - Paddle.height - 10, function()
 		return ball.x < 0
 	end)
 
@@ -85,9 +86,10 @@ function love.keypressed(key)
 end
 
 function love.update(dt)
-	for _, p in pairs({ p1, p2 }) do
+	for _, player in pairs({ p1, p2 }) do
+		local paddle = player.paddle
 		-- Paddle collision
-		if ball:collides(p) then
+		if ball:collides(paddle) then
 			-- Reverse dx
 			ball.dx = -ball.dx
 			-- Speed up ball a little
@@ -95,9 +97,9 @@ function love.update(dt)
 
 			-- snap the ball to the right/left edge of the paddle, to avoid infinite collission
 			if ball.dx > 0 then
-				ball.x = p.x + p.width
+				ball.x = paddle.x + paddle.width
 			else
-				ball.x = p.x - ball.width
+				ball.x = paddle.x - ball.width
 			end
 
 			-- Add some random to speed_y for fun
@@ -105,14 +107,14 @@ function love.update(dt)
 		end
 
 		-- Scoring
-		if p:scored() then
-			p.score = p.score + 1
-			if p1.score >= WIN_SCORE then
-				winner = p1
+		if player:scored() then
+			player.score = player.score + 1
+			if player.score >= WIN_SCORE then
+				winner = player
 				game_state = "end"
 			else
-				p1:reset_position()
-				p2:reset_position()
+				p1:reset_paddle()
+				p2:reset_paddle()
 				ball:reset()
 				game_state = "start"
 			end
@@ -129,26 +131,26 @@ function love.update(dt)
 	end
 
 	-- p1
-	p1.dy = 0
+	p1.paddle.dy = 0
 	if love.keyboard.isDown("w") then
-		p1.dy = p1.dy - 1
+		p1.paddle.dy = p1.paddle.dy - 1
 	end
 	if love.keyboard.isDown("s") then
-		p1.dy = p1.dy + 1
+		p1.paddle.dy = p1.paddle.dy + 1
 	end
 
 	-- p2
-	p2.dy = 0
+	p2.paddle.dy = 0
 	if love.keyboard.isDown("up") then
-		p2.dy = p2.dy - 1
+		p2.paddle.dy = p2.paddle.dy - 1
 	end
 	if love.keyboard.isDown("down") then
-		p2.dy = p2.dy + 1
+		p2.paddle.dy = p2.paddle.dy + 1
 	end
 
 	if game_state == "play" then
-		p1:update(dt)
-		p2:update(dt)
+		p1.paddle:update(dt)
+		p2.paddle:update(dt)
 		ball:update(dt)
 	end
 end
@@ -161,8 +163,8 @@ function love.draw()
 	love.graphics.setFont(font_big)
 	love.graphics.printf(p1.score .. "\t" .. p2.score, 0, math.floor(GAME_HEIGHT / 6), GAME_WIDTH, "center")
 
-	p1:render()
-	p2:render()
+	p1.paddle:render()
+	p2.paddle:render()
 	ball:render()
 
 	if game_state == "paused" then

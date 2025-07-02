@@ -5,8 +5,6 @@
 ---@field width number
 ---@field height number
 ---@field speed number
----@field score number
----@field name string
 ---@field private x_init number
 ---@field private y_init number
 Paddle = {
@@ -15,7 +13,7 @@ Paddle = {
 	speed = 200,
 }
 
-function Paddle:new(x, y, name, scored_pred, params)
+function Paddle:new(x, y, params)
 	local p = {}
 	params = params or {}
 	setmetatable(p, self)
@@ -25,9 +23,6 @@ function Paddle:new(x, y, name, scored_pred, params)
 	p.y_init = y
 	p.width = params.width
 	p.height = params.height
-	p.name = name
-	p.score = 0
-	p.scored_pred = scored_pred
 
 	p:reset()
 
@@ -43,10 +38,6 @@ function Paddle:reset_position()
 	self.x = self.x_init
 	self.y = self.y_init
 	self.dy = 0
-end
-
-function Paddle:scored()
-	return self.scored_pred()
 end
 
 function Paddle:render()
