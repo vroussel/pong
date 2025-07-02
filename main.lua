@@ -169,10 +169,28 @@ function love.update(dt)
 	end
 end
 
+local function bg_color(params)
+	params = params or {}
+	return love.math.colorFromBytes(40, 45, 52, params.alpha)
+end
+
+local function print_center_message(msg)
+	local old_font = love.graphics.getFont()
+	local old_color = love.graphics.getColor()
+
+	love.graphics.setFont(font_big)
+	love.graphics.setColor(bg_color({ alpha = 240 }))
+	love.graphics.rectangle("fill", 0, 0, GAME_WIDTH, GAME_HEIGHT)
+	love.graphics.printf(msg, 0, (GAME_HEIGHT - love.graphics.getFont():getHeight()) / 2, GAME_WIDTH, "center")
+
+	love.graphics.setColor(old_color)
+	love.graphics.setFont(old_font)
+end
+
 function love.draw()
 	push.start()
 	love.graphics.setColor(love.math.colorFromBytes(255, 255, 255, 255))
-	love.graphics.clear(love.math.colorFromBytes(40, 45, 52))
+	love.graphics.clear(bg_color())
 	display_fps()
 	love.graphics.setFont(font_big)
 	love.graphics.printf(p1.score .. "\t" .. p2.score, 0, math.floor(GAME_HEIGHT / 6), GAME_WIDTH, "center")
@@ -182,21 +200,9 @@ function love.draw()
 	ball:render()
 
 	if game_state == "paused" then
-		love.graphics.setColor(love.math.colorFromBytes(40, 45, 52, 240))
-		love.graphics.rectangle("fill", 0, 0, GAME_WIDTH, GAME_HEIGHT)
-		love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.printf("PAUSED", 0, (GAME_HEIGHT - love.graphics.getFont():getHeight()) / 2, GAME_WIDTH, "center")
+		print_center_message("PAUSED")
 	elseif game_state == "end" then
-		love.graphics.setColor(love.math.colorFromBytes(40, 45, 52, 240))
-		love.graphics.rectangle("fill", 0, 0, GAME_WIDTH, GAME_HEIGHT)
-		love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.printf(
-			winner.name .. " WINS !",
-			0,
-			(GAME_HEIGHT - love.graphics.getFont():getHeight()) / 2,
-			GAME_WIDTH,
-			"center"
-		)
+		print_center_message(winner.name .. " WINS !")
 	end
 
 	push.finish()
