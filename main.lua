@@ -156,9 +156,9 @@ function love.update(dt)
 		p2.paddle.dy = p2.paddle.dy + 1
 	end
 
+	p1.paddle:update(dt)
+	p2.paddle:update(dt)
 	if game_state == "play" then
-		p1.paddle:update(dt)
-		p2.paddle:update(dt)
 		ball:update(dt)
 	end
 end
