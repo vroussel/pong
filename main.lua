@@ -133,6 +133,10 @@ function love.keypressed(key)
 		if key == "escape" then
 			game_state = "paused"
 		end
+	elseif game_state == "serve" then
+		if key == "space" then
+			game_state = "play"
+		end
 	elseif game_state == "paused" then
 		if key == "escape" then
 			game_state = "play"
@@ -181,7 +185,7 @@ function love.update(dt)
 				serving_player = opponent(player)
 				ball:reset(serving_player)
 
-				game_state = "start"
+				game_state = "serve"
 			end
 		end
 	end
@@ -283,6 +287,8 @@ function love.draw()
 		print_small_top_message("Welcome to Pong\nPress space to start\nPress q to quit")
 	elseif game_state == "play" then
 		print_small_top_message("Press escape to pause")
+	elseif game_state == "serve" then
+		print_small_top_message("Service to " .. serving_player.name .. "\nPress space to play\nPress q to quit")
 	end
 
 	push.finish()
