@@ -48,7 +48,10 @@ local function display_ball_speed()
 	local label = "Ball speed: "
 	love.graphics.print(label, GAME_WIDTH - 75, 2)
 
+	-- The faster the ball gets, the more "red" the speed will be shown
 	local speed = game_state == "play" and ball:speed() or 0
+	local speed_normalized = speed / 500
+	love.graphics.setColor(1, 1 - math.min(1, speed_normalized), 1 - math.min(1, speed_normalized), 1)
 	love.graphics.print(speed, GAME_WIDTH - 75 + love.graphics.getFont():getWidth(label), 2)
 
 	love.graphics.setColor(old_color)

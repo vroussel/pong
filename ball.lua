@@ -75,4 +75,8 @@ function Ball:speed()
 	return math.floor(math.sqrt(self.speed_x * self.speed_x + self.speed_y * self.speed_y))
 end
 
+function Ball:speed_normalized()
+	return self:speed() / 500
+end
+
 return Ball
