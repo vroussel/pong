@@ -7,5 +7,5 @@ This is done following the [CS50 2D course from Harvard](https://cs50.harvard.ed
  - pause menu
  - no class.lua library dependency
  - removed most global variables in main.lua
- - other slight code changes here and there (less magic numbers, code paths combined, etc)
+ - other code changes here and there (less magic numbers, code paths combined, etc)
  - ball speed display (with dynamic color)
