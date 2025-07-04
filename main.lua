@@ -125,6 +125,7 @@ function love.update(dt)
 			player.score = player.score + 1
 			if player.score >= WIN_SCORE then
 				winner = player
+				ball:reset()
 				game_state = "end"
 			else
 				p1:reset_paddle()
