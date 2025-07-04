@@ -232,6 +232,7 @@ local function print_big_center_message(msg)
 	love.graphics.setFont(font_big)
 	love.graphics.setColor(bg_color({ alpha = 240 }))
 	love.graphics.rectangle("fill", 0, 0, GAME_WIDTH, GAME_HEIGHT)
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(msg, 0, (GAME_HEIGHT - love.graphics.getFont():getHeight()) / 2, GAME_WIDTH, "center")
 
 	love.graphics.setColor(old_color)
