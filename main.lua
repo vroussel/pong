@@ -1,7 +1,7 @@
 GAME_WIDTH = 432
 GAME_HEIGHT = 243
 
-SCORE_Y_POS_PCT = 15
+BG_COLOR = { 40 / 255, 45 / 255, 52 / 255 }
 
 local WINDOW_WIDTH = 1280
 local WINDOW_HEIGHT = 720
@@ -12,14 +12,17 @@ local BALL_RADIUS = 2
 -- Above that, collision detection doesn't work
 local MAX_BALL_X_SPEED = 700
 
-local font_big
-local font_small
+---@type love.Font
+Font_small = nil
+---@type love.Font
+Font_big = nil
 
 local love = require("love")
 local push = require("push")
 local Ball = require("ball")
 local Paddle = require("paddle")
 local Player = require("player")
+local hud = require("hud")
 
 local paddle_sound = love.audio.newSource("sounds/paddle_hit.wav", "static")
 local scored_sound = love.audio.newSource("sounds/scored.wav", "static")
@@ -33,61 +36,12 @@ local ball
 
 local game_state = nil
 
-local function display_fps()
-	local old_font = love.graphics.getFont()
-	local old_color = { love.graphics.getColor() }
-
-	love.graphics.setFont(font_small)
-	love.graphics.setColor(0, 1, 0, 1)
-	love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), 2, 2)
-
-	love.graphics.setColor(old_color)
-	love.graphics.setFont(old_font)
-end
-
-local function display_ball_speed()
-	local old_font = love.graphics.getFont()
-	local old_color = { love.graphics.getColor() }
-
-	love.graphics.setFont(font_small)
-
-	love.graphics.setColor(1, 1, 1, 1)
-	local label = "Ball speed: "
-	love.graphics.print(label, GAME_WIDTH - 75, 2)
-
-	-- The faster the ball gets, the more "red" the speed will be shown
-	local speed = game_state == "play" and ball:speed() or 0
-	local speed_normalized = speed / 500
-	love.graphics.setColor(1, 1 - math.min(1, speed_normalized), 1 - math.min(1, speed_normalized), 1)
-	love.graphics.print(speed, GAME_WIDTH - 75 + love.graphics.getFont():getWidth(label), 2)
-
-	love.graphics.setColor(old_color)
-	love.graphics.setFont(old_font)
-end
-
 local function opponent(p)
 	if p == p1 then
 		return p2
 	else
 		return p1
 	end
-end
-
-local function display_score()
-	local old_font = love.graphics.getFont()
-	local old_color = { love.graphics.getColor() }
-
-	love.graphics.setFont(font_big)
-	love.graphics.printf(
-		p1.score .. "\t" .. p2.score,
-		0,
-		math.floor(GAME_HEIGHT * SCORE_Y_POS_PCT / 100),
-		GAME_WIDTH,
-		"center"
-	)
-
-	love.graphics.setColor(old_color)
-	love.graphics.setFont(old_font)
 end
 
 local function reset_game()
@@ -99,8 +53,8 @@ end
 function love.load()
 	love.graphics.setDefaultFilter("nearest", "nearest")
 
-	font_big = love.graphics.newFont("font.ttf", 32)
-	font_small = love.graphics.newFont("font.ttf", 8)
+	Font_big = love.graphics.newFont("font.ttf", 32)
+	Font_small = love.graphics.newFont("font.ttf", 8)
 
 	ball = Ball:new(BALL_RADIUS)
 	p1 = Player:new("Player 1", 10, 10, function()
@@ -111,7 +65,7 @@ function love.load()
 	end)
 
 	love.window.setMode(WINDOW_WIDTH, WINDOW_HEIGHT, {
-		resizable = false,
+		resizable = true,
 		vsync = true,
 		fullscreen = false,
 	})
@@ -158,6 +112,10 @@ function love.keypressed(key)
 			love.event.quit()
 		end
 	end
+end
+
+function love.resize(w, h)
+	push.resize(w, h)
 end
 
 function love.update(dt)
@@ -242,71 +200,32 @@ function love.update(dt)
 	end
 end
 
-local function bg_color(params)
-	params = params or {}
-	return love.math.colorFromBytes(40, 45, 52, params.alpha)
-end
-
-local function print_big_center_message(msg)
-	local old_font = love.graphics.getFont()
-	local old_color = { love.graphics.getColor() }
-
-	love.graphics.setFont(font_big)
-	love.graphics.setColor(bg_color({ alpha = 240 }))
-	love.graphics.rectangle("fill", 0, 0, GAME_WIDTH, GAME_HEIGHT)
-	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.printf(msg, 0, (GAME_HEIGHT - love.graphics.getFont():getHeight()) / 2, GAME_WIDTH, "center")
-
-	love.graphics.setColor(old_color)
-	love.graphics.setFont(old_font)
-end
-
-local function print_small_top_message(msg)
-	local old_font = love.graphics.getFont()
-
-	-- hack to count the number of lines in msg
-	local _, n_newlines = string.gsub(msg, "\n", "")
-	local n_lines = n_newlines + 1
-
-	love.graphics.setFont(font_small)
-	love.graphics.printf(
-		msg,
-		0,
-		-- Vertically centered between top and score
-		math.floor((GAME_HEIGHT * SCORE_Y_POS_PCT / 100 / 2) - love.graphics.getFont():getHeight() * n_lines / 2),
-		GAME_WIDTH,
-		"center"
-	)
-
-	love.graphics.setFont(old_font)
-end
-
 function love.draw()
 	push.start()
 
 	love.graphics.setColor(love.math.colorFromBytes(255, 255, 255, 255))
-	love.graphics.clear(bg_color())
+	love.graphics.clear(BG_COLOR)
 
-	display_fps()
-	display_ball_speed()
-	display_score()
+	hud.display_fps()
+	hud.display_ball_speed(game_state, ball)
+	hud.display_score(p1, p2)
 
 	p1.paddle:render()
 	p2.paddle:render()
 	ball:render()
 
 	if game_state == "paused" then
-		print_big_center_message("PAUSED")
-		print_small_top_message("Press escape to resume\nPress q to quit")
+		hud.display_message("alert", "PAUSED")
+		hud.display_message("info", "Press escape to resume\nPress q to quit")
 	elseif game_state == "end" then
-		print_big_center_message(winner.name .. " WINS !")
-		print_small_top_message("Press space to play again\nPress q to quit")
+		hud.display_message("alert", winner.name .. " WINS !")
+		hud.display_message("info", "Press space to play again\nPress q to quit")
 	elseif game_state == "start" then
-		print_small_top_message("Welcome to Pong\nPress space to start\nPress q to quit")
+		hud.display_message("info", "Welcome to Pong\nPress space to start\nPress q to quit")
 	elseif game_state == "play" then
-		print_small_top_message("Press escape to pause")
+		hud.display_message("info", "Press escape to pause")
 	elseif game_state == "serve" then
-		print_small_top_message("Service to " .. serving_player.name .. "\nPress space to play\nPress q to quit")
+		hud.display_message("info", "Service to " .. serving_player.name .. "\nPress space to play\nPress q to quit")
 	end
 
 	push.finish()
