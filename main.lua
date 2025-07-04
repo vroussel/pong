@@ -36,7 +36,23 @@ local function display_fps()
 
 	love.graphics.setColor(old_color)
 	love.graphics.setFont(old_font)
+end
+
+local function display_ball_speed()
+	local old_font = love.graphics.getFont()
+	local old_color = { love.graphics.getColor() }
+
+	love.graphics.setFont(font_small)
+
 	love.graphics.setColor(1, 1, 1, 1)
+	local label = "Ball speed: "
+	love.graphics.print(label, GAME_WIDTH - 75, 2)
+
+	local speed = game_state == "play" and ball:speed() or 0
+	love.graphics.print(speed, GAME_WIDTH - 75 + love.graphics.getFont():getWidth(label), 2)
+
+	love.graphics.setColor(old_color)
+	love.graphics.setFont(old_font)
 end
 
 local function opponent(p)
@@ -205,8 +221,8 @@ function love.draw()
 	love.graphics.setColor(love.math.colorFromBytes(255, 255, 255, 255))
 	love.graphics.clear(bg_color())
 	display_fps()
-	love.graphics.setFont(font_big)
-	love.graphics.printf(p1.score .. "\t" .. p2.score, 0, math.floor(GAME_HEIGHT / 6), GAME_WIDTH, "center")
+	display_ball_speed()
+	display_score()
 
 	p1.paddle:render()
 	p2.paddle:render()

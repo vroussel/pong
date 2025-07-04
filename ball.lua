@@ -71,4 +71,8 @@ function Ball:collides(paddle)
 	return true
 end
 
+function Ball:speed()
+	return math.floor(math.sqrt(self.speed_x * self.speed_x + self.speed_y * self.speed_y))
+end
+
 return Ball
