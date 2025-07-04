@@ -121,13 +121,11 @@ function love.load()
 end
 
 function love.keypressed(key)
-	if key == "q" then
-		love.event.quit()
-	end
-
 	if game_state == "start" then
 		if key == "space" then
 			game_state = "play"
+		elseif key == "q" then
+			love.event.quit()
 		end
 	elseif game_state == "play" then
 		if key == "escape" then
@@ -136,15 +134,21 @@ function love.keypressed(key)
 	elseif game_state == "serve" then
 		if key == "space" then
 			game_state = "play"
+		elseif key == "q" then
+			love.event.quit()
 		end
 	elseif game_state == "paused" then
 		if key == "escape" then
 			game_state = "play"
+		elseif key == "q" then
+			love.event.quit()
 		end
 	elseif game_state == "end" then
 		if key == "space" then
 			reset_game()
 			game_state = "start"
+		elseif key == "q" then
+			love.event.quit()
 		end
 	end
 end
