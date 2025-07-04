@@ -177,6 +177,7 @@ function love.update(dt)
 
 			-- Play sound
 			paddle_sound:play()
+			paddle_sound:setPitch(1 + ball:speed_normalized() / 2)
 		end
 
 		-- Scoring
