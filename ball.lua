@@ -27,20 +27,23 @@ function Ball:new(radius, params)
 	return b
 end
 
----@param serving_side 'left'|'right'|nil
-function Ball:reset(serving_side)
+---@param serving_player Player | nil
+function Ball:reset(serving_player)
 	self.x = self.x_init
 	self.y = self.y_init
 	self.speed_x = 100
 	self.speed_y = math.random(50)
 	self.dy = math.random(2) == 1 and 1 or -1
 
-	if serving_side == "left" then
-		self.dx = -1
-	elseif serving_side == "right" then
-		self.dx = 1
-	else
+	-- Serving player is undefined
+	if serving_player == nil then
 		self.dx = math.random(2) == 1 and 1 or -1
+	-- Serving player is on the right
+	elseif self.x + self.width < serving_player.paddle.x then
+		self.dx = 1
+	-- Serving player is on the left
+	else
+		self.dx = -1
 	end
 end
 

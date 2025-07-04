@@ -20,7 +20,7 @@ local Paddle = require("paddle")
 local Player = require("player")
 
 ---@type Player, Player, Player
-local p1, p2, winner
+local p1, p2, winner, serving_player
 ---@type Ball
 local ball
 
@@ -37,6 +37,14 @@ local function display_fps()
 	love.graphics.setColor(old_color)
 	love.graphics.setFont(old_font)
 	love.graphics.setColor(1, 1, 1, 1)
+end
+
+local function opponent(p)
+	if p == p1 then
+		return p2
+	else
+		return p1
+	end
 end
 
 local function reset_game()
@@ -131,13 +139,9 @@ function love.update(dt)
 				p1:reset_paddle()
 				p2:reset_paddle()
 
-				local serving_side
-				if player == p1 then
-					serving_side = "right"
-				else
-					serving_side = "left"
-				end
-				ball:reset(serving_side)
+				-- Give service to the player who just lost the point
+				serving_player = opponent(player)
+				ball:reset(serving_player)
 
 				game_state = "start"
 			end
