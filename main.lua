@@ -239,10 +239,32 @@ local function print_big_center_message(msg)
 	love.graphics.setFont(old_font)
 end
 
+local function print_small_top_message(msg)
+	local old_font = love.graphics.getFont()
+
+	-- hack to count the number of lines in msg
+	local _, n_newlines = string.gsub(msg, "\n", "")
+	local n_lines = n_newlines + 1
+
+	love.graphics.setFont(font_small)
+	love.graphics.printf(
+		msg,
+		0,
+		-- Vertically centered between top and score
+		math.floor((GAME_HEIGHT * SCORE_Y_POS_PCT / 100 / 2) - love.graphics.getFont():getHeight() * n_lines / 2),
+		GAME_WIDTH,
+		"center"
+	)
+
+	love.graphics.setFont(old_font)
+end
+
 function love.draw()
 	push.start()
+
 	love.graphics.setColor(love.math.colorFromBytes(255, 255, 255, 255))
 	love.graphics.clear(bg_color())
+
 	display_fps()
 	display_ball_speed()
 	display_score()
@@ -253,8 +275,14 @@ function love.draw()
 
 	if game_state == "paused" then
 		print_big_center_message("PAUSED")
+		print_small_top_message("Press escape to resume\nPress q to quit")
 	elseif game_state == "end" then
 		print_big_center_message(winner.name .. " WINS !")
+		print_small_top_message("Press space to play again\nPress q to quit")
+	elseif game_state == "start" then
+		print_small_top_message("Welcome to Pong\nPress space to start\nPress q to quit")
+	elseif game_state == "play" then
+		print_small_top_message("Press escape to pause")
 	end
 
 	push.finish()
