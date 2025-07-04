@@ -21,6 +21,8 @@ local Ball = require("ball")
 local Paddle = require("paddle")
 local Player = require("player")
 
+local paddle_sound = love.audio.newSource("sounds/paddle_hit.wav", "static")
+
 ---@type Player, Player, Player
 local p1, p2, winner, serving_player
 ---@type Ball
@@ -172,6 +174,9 @@ function love.update(dt)
 
 			-- Add some random to speed_y for fun
 			ball.speed_y = ball.speed_y * math.random(50, 200) / 100
+
+			-- Play sound
+			paddle_sound:play()
 		end
 
 		-- Scoring
