@@ -225,7 +225,7 @@ local function bg_color(params)
 	return love.math.colorFromBytes(40, 45, 52, params.alpha)
 end
 
-local function print_center_message(msg)
+local function print_big_center_message(msg)
 	local old_font = love.graphics.getFont()
 	local old_color = { love.graphics.getColor() }
 
@@ -251,9 +251,9 @@ function love.draw()
 	ball:render()
 
 	if game_state == "paused" then
-		print_center_message("PAUSED")
+		print_big_center_message("PAUSED")
 	elseif game_state == "end" then
-		print_center_message(winner.name .. " WINS !")
+		print_big_center_message(winner.name .. " WINS !")
 	end
 
 	push.finish()
