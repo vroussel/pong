@@ -25,9 +25,15 @@ local ball
 local game_state = nil
 
 local function display_fps()
+	local old_font = love.graphics.getFont()
+	local old_color = { love.graphics.getColor() }
+
 	love.graphics.setFont(font_small)
 	love.graphics.setColor(0, 1, 0, 1)
 	love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), 2, 2)
+
+	love.graphics.setColor(old_color)
+	love.graphics.setFont(old_font)
 	love.graphics.setColor(1, 1, 1, 1)
 end
 
