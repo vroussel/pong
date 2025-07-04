@@ -1,6 +1,8 @@
 GAME_WIDTH = 432
 GAME_HEIGHT = 243
 
+SCORE_Y_POS_PCT = 15
+
 local WINDOW_WIDTH = 1280
 local WINDOW_HEIGHT = 720
 
@@ -64,6 +66,23 @@ local function opponent(p)
 	else
 		return p1
 	end
+end
+
+local function display_score()
+	local old_font = love.graphics.getFont()
+	local old_color = { love.graphics.getColor() }
+
+	love.graphics.setFont(font_big)
+	love.graphics.printf(
+		p1.score .. "\t" .. p2.score,
+		0,
+		math.floor(GAME_HEIGHT * SCORE_Y_POS_PCT / 100),
+		GAME_WIDTH,
+		"center"
+	)
+
+	love.graphics.setColor(old_color)
+	love.graphics.setFont(old_font)
 end
 
 local function reset_game()
