@@ -22,6 +22,9 @@ local Paddle = require("paddle")
 local Player = require("player")
 
 local paddle_sound = love.audio.newSource("sounds/paddle_hit.wav", "static")
+local scored_sound = love.audio.newSource("sounds/scored.wav", "static")
+local start_sound = love.audio.newSource("sounds/start.wav", "static")
+local win_sound = love.audio.newSource("sounds/win.wav", "static")
 
 ---@type Player, Player, Player
 local p1, p2, winner, serving_player
@@ -120,6 +123,7 @@ function love.load()
 
 	reset_game()
 	game_state = "start"
+	start_sound:play()
 end
 
 function love.keypressed(key)
@@ -149,6 +153,7 @@ function love.keypressed(key)
 		if key == "space" then
 			reset_game()
 			game_state = "start"
+			start_sound:play()
 		elseif key == "q" then
 			love.event.quit()
 		end
@@ -186,6 +191,7 @@ function love.update(dt)
 			if player.score >= WIN_SCORE then
 				winner = player
 				ball:reset()
+				win_sound:play()
 				game_state = "end"
 			else
 				p1:reset_paddle()
@@ -194,6 +200,8 @@ function love.update(dt)
 				-- Give service to the player who just lost the point
 				serving_player = opponent(player)
 				ball:reset(serving_player)
+
+				scored_sound:play()
 
 				game_state = "serve"
 			end
