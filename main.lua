@@ -7,6 +7,8 @@ local WINDOW_HEIGHT = 720
 local WIN_SCORE = 10
 
 local BALL_RADIUS = 2
+-- Above that, collision detection doesn't work
+local MAX_BALL_X_SPEED = 700
 
 local font_big
 local font_small
@@ -105,7 +107,7 @@ function love.update(dt)
 			-- Reverse dx
 			ball.dx = -ball.dx
 			-- Speed up ball a little
-			ball.speed_x = ball.speed_x * 1.15
+			ball.speed_x = math.min(MAX_BALL_X_SPEED, ball.speed_x * 1.15)
 
 			-- snap the ball to the right/left edge of the paddle, to avoid infinite collission
 			if ball.dx > 0 then
