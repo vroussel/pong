@@ -227,7 +227,7 @@ end
 
 local function print_center_message(msg)
 	local old_font = love.graphics.getFont()
-	local old_color = love.graphics.getColor()
+	local old_color = { love.graphics.getColor() }
 
 	love.graphics.setFont(font_big)
 	love.graphics.setColor(bg_color({ alpha = 240 }))
