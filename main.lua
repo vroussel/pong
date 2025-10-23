@@ -36,6 +36,10 @@ local ball
 
 local game_state = nil
 
+local function running_from_web()
+	return love.system.getOS() == "Web"
+end
+
 local function opponent(p)
 	if p == p1 then
 		return p2
@@ -48,6 +52,13 @@ local function reset_game()
 	ball:reset()
 	p1:reset()
 	p2:reset()
+end
+
+local function quit_game_if_possible()
+	if running_from_web() then
+		return
+	end
+	love.event.quit()
 end
 
 function love.load()
@@ -85,23 +96,23 @@ function love.keypressed(key)
 		if key == "space" then
 			game_state = "play"
 		elseif key == "q" then
-			love.event.quit()
+			quit_game_if_possible()
 		end
 	elseif game_state == "play" then
-		if key == "escape" then
+		if key == "space" then
 			game_state = "paused"
 		end
 	elseif game_state == "serve" then
 		if key == "space" then
 			game_state = "play"
 		elseif key == "q" then
-			love.event.quit()
+			quit_game_if_possible()
 		end
 	elseif game_state == "paused" then
-		if key == "escape" then
+		if key == "space" then
 			game_state = "play"
 		elseif key == "q" then
-			love.event.quit()
+			quit_game_if_possible()
 		end
 	elseif game_state == "end" then
 		if key == "space" then
@@ -109,7 +120,7 @@ function love.keypressed(key)
 			game_state = "start"
 			start_sound:play()
 		elseif key == "q" then
-			love.event.quit()
+			quit_game_if_possible()
 		end
 	end
 end
@@ -200,6 +211,34 @@ function love.update(dt)
 	end
 end
 
+local function show_state_info()
+	local alert = nil
+	local info = nil
+	if game_state == "paused" then
+		alert = "PAUSED"
+		info = "Press space to resume"
+	elseif game_state == "end" then
+		alert = winner.name .. " WINS !"
+		info = "Press space to play again"
+	elseif game_state == "start" then
+		info = "Welcome to Pong\nPress space to start"
+	elseif game_state == "play" then
+		info = "Press space to pause"
+	elseif game_state == "serve" then
+		info = "Service to " .. serving_player.name .. "\nPress space to play"
+	end
+
+	if alert ~= nil then
+		hud.display_message("alert", alert)
+	end
+	if info ~= nil then
+		if game_state ~= "play" and not running_from_web() then
+			info = info .. "\nPress q to quit"
+		end
+		hud.display_message("info", info)
+	end
+end
+
 function love.draw()
 	push.start()
 
@@ -214,19 +253,7 @@ function love.draw()
 	p2.paddle:render()
 	ball:render()
 
-	if game_state == "paused" then
-		hud.display_message("alert", "PAUSED")
-		hud.display_message("info", "Press escape to resume\nPress q to quit")
-	elseif game_state == "end" then
-		hud.display_message("alert", winner.name .. " WINS !")
-		hud.display_message("info", "Press space to play again\nPress q to quit")
-	elseif game_state == "start" then
-		hud.display_message("info", "Welcome to Pong\nPress space to start\nPress q to quit")
-	elseif game_state == "play" then
-		hud.display_message("info", "Press escape to pause")
-	elseif game_state == "serve" then
-		hud.display_message("info", "Service to " .. serving_player.name .. "\nPress space to play\nPress q to quit")
-	end
+	show_state_info()
 
 	push.finish()
 end
