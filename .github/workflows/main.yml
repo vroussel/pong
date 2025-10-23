@@ -1,0 +1,30 @@
+name: publish to itch.io
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  WEB_MEMORY_SIZE: 64_000_000
+  BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install butler
+      run: |
+        mkdir /opt/butler
+        curl -L -o /opt/butler/butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+        unzip -d /opt/butler/ /opt/butler/butler.zip
+        ln -s /opt/butler/butler /usr/local/bin/butler
+    - name: Build web version
+      run: |
+        npx love.js -m ${WEB_MEMORY_SIZE} -c ../${{ github.event.repository.name }} -t ${{ github.event.repository.name }} web
+    - name: Butler push
+      run: |
+        butler login
+        butler push --if-changed web fakecat/pong:web
