@@ -10,5 +10,5 @@ Click on the image to play
  - pause menu
  - no class.lua library dependency
  - removed most global variables in main.lua
- - other code changes here and there (less magic numbers, code paths combined, etc)
+ - other code changes here and there (less magic numbers, etc)
  - ball speed display (with dynamic color)
